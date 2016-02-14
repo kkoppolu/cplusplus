@@ -82,7 +82,8 @@ namespace {
       // we track this towards the end to avoid breaking after the space occuring exactly at the limit
       // for example if the space is the last character violating the size constraint,
       // we should break at the previous space
-      if (std::isspace(line[i]) != 0) {
+      if (std::isspace(line[i]) != 0
+	  || std::ispunct(line[i]) != 0) {
 	s = i;
       } // if
       
