@@ -21,11 +21,11 @@ namespace {
 	   const std::string&        filePath,
 	   const size_t              numLines)
   {
-    std::ifstream ifs(filePath.c_str());
-    if (ifs.is_open()) {
+    std::ifstream ifs(filePath.c_str(), std::ifstream::in);
+    if (ifs.good()) {
       std::string line;
-      while (std::getline(ifs, line)) {
-	if (lines.size() >= numLines) {
+      while (std::getline(ifs, line).good()) {
+	if (lines.size() > numLines) {
 	  // if we have exceeded num lines,
 	  // we will throw away the first
 	  lines.pop();
@@ -48,7 +48,7 @@ namespace {
     static const char Wcard('*');
     int p = 0;
     for (size_t i=0; i < line.size(); ++i) {
-      if (std::toupper(line[i]) == toupper(pattern[p])
+      if (std::toupper(line[i]) == std::toupper(pattern[p])
 	  || pattern[p] == Wcard) {
 	// look for the consecutive character match
 	++p;

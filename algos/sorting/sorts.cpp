@@ -37,14 +37,14 @@ namespace {
   {
     for (size_t i = 0; i < numbers.size(); ++i) {
       int minIdx = i;
-      for (size_t j = i; j < numbers.size(); ++j) {
+      for (size_t j = i+1; j < numbers.size(); ++j) {
 	if (numbers[j] < numbers[minIdx]) {
 	  minIdx = j;
 	} // if
       } // for
       //swap
 
-      if (minIdx < numbers.size()) {
+      if (minIdx != i) {
 	int tmp = numbers[minIdx];      
 	numbers[minIdx] = numbers[i];
 	numbers[i] = tmp;
@@ -110,7 +110,6 @@ namespace {
       // no point spinning our wheels by swapping them.
       // adjust the pivot slightly
       if (numbers[i] == numbers[j]) {
-	//i = j;
 	++pivot;
       } // if
 
@@ -212,12 +211,15 @@ namespace {
   // move the given element down to its children to maintain the
   // heap property
   void
-  percolateHeapElemDown(int k, std::vector<int>& numbers, int sz)
+  percolateHeapElemDown(int k, std::vector<int>& numbers, const int sz)
   {
-    int childIdx = -1;
-    for(int lChild = 2*k + 1; lChild < sz && k >= 0;
-	k = childIdx) {
-      int rChild = lChild + 1;
+    while (k >= 0) {
+      const int lChild = 2*k + 1;
+      const int rChild = lChild + 1;
+
+      if (lChild >= sz) {
+	break;
+      } // if
 
       // select the child to swap against
       int childIdx = lChild;
@@ -225,7 +227,6 @@ namespace {
 	  && (numbers[rChild] > numbers[lChild])) {
 	childIdx = rChild;
       } // if
-
       // perform the swap if necessary
       if (numbers[childIdx] > numbers[k]) {
 	int tmp = numbers[k];
@@ -234,6 +235,7 @@ namespace {
       } else {
 	break;
       } // if
+      k = childIdx;
     } // for 
   } // percolateHeapElemDown
 
@@ -268,7 +270,7 @@ namespace {
     // Root = (k+1)/2 -1      [(k-1)/2]  // for 1 indexed: k/2
     // Left = 2(k+1) -1       [2k + 1]   // for 1 indexed: 2k
     // Right = 2(k+1) + 1 -1  [2k + 2]   // for 1 indexed: 2k+1
-    for (int k = (sz+1)/2; k >= 0; --k) {
+    for (int k = (sz-2)/2; k >= 0; --k) {
       // all the elements in the first half of the array
       // will have children in the second  half of the array
       // so set their children up properly per heap order property
@@ -280,10 +282,9 @@ namespace {
   heapSort(std::vector<int> numbers)
   {
     int numHeapElems = numbers.size();
+    // heapify
+    heapify(numbers, numHeapElems);
     do {
-      // heapify
-      heapify(numbers, numHeapElems);
-
       // pop the max and move it to the last
       // and keep it out of the heap
       heapDelete(numbers, numHeapElems);
@@ -310,7 +311,7 @@ int main(int argc, char* argv[])
     } // while
   } // if
 
-  std::random_shuffle(numbers.begin(), numbers.end());
+/*  std::random_shuffle(numbers.begin(), numbers.end());
   selectionSort(numbers);
 
   std::random_shuffle(numbers.begin(), numbers.end());
@@ -324,7 +325,7 @@ int main(int argc, char* argv[])
 
   std::random_shuffle(numbers.begin(), numbers.end());
   mergeSort(numbers);
-
+*/
   std::random_shuffle(numbers.begin(), numbers.end());
   heapSort(numbers);
 

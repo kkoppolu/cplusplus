@@ -15,9 +15,9 @@ namespace {
   {
     std::ifstream ifs(fileName.c_str());
 
-    if (ifs.is_open() == true) {
+    if (ifs.good() == true) {
       std::string l;
-      while (std::getline(ifs, l)) {
+      while (std::getline(ifs, l).good() == true) {
 	line += l;
 	// handle new lines in the file itself
 	// getline will read them as separate lines
