@@ -119,6 +119,9 @@ namespace {
 	int tmp = numbers[i];
 	numbers[i] = numbers[j];
 	numbers[j] = tmp;
+	// go to the next out of place pair
+	++i;
+	++j;
       }  else {
 	// at this point i == j (i > j is impossible) because
 	// the comparisons < and > will return false

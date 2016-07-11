@@ -84,7 +84,7 @@ namespace kkoppolu {
 	  addHelper(val, *right);
 	} else {
 	  // create the node and assign right
-	  parent.right() = std::shared_ptr<Node>(new Node(val));
+	  parent.right() = std::make_shared<Node>(val);
 	} // if
       } // if
     }
@@ -350,12 +350,12 @@ namespace kkoppolu {
 
       // if they are off by more than 1, they are not
       // balanced
-      if (std::abs(rH - lH) <= 1) {
+      if (std::abs(rH - lH) <= 1
+	  && isBalanced(node->left())
+	  && isBalanced(node->right())) {
 	return true;
-      } else {
-	return isBalanced(node->left())
-	  && isBalanced(node->right());
       }
+      return false;
     }
 
     

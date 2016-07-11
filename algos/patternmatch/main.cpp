@@ -1,8 +1,9 @@
 #include <fstream>
 #include <iostream>
-#include <queue>
+#include <deque>
 #include <vector>
 #include <cstdlib>
+#include <regex>
 
 namespace {
 
@@ -17,7 +18,7 @@ namespace {
   // @numLines - Number of lines to read
   // *****************************************************************
   void
-  readFile(std::queue<std::string>&  lines,
+  readFile(std::deque<std::string>&  lines,
 	   const std::string&        filePath,
 	   const size_t              numLines)
   {
@@ -28,9 +29,9 @@ namespace {
 	if (lines.size() > numLines) {
 	  // if we have exceeded num lines,
 	  // we will throw away the first
-	  lines.pop();
+	  lines.pop_front();
 	} // if
-	lines.push(line);
+	lines.push_back(line);
       } // while
     } // if
   } // readFile
@@ -79,18 +80,35 @@ namespace {
   // *****************************************************************
   void
   matchLines(std::vector<std::string>& matchLines,
-	     std::queue<std::string>& lines,
+	     std::deque<std::string>& lines,
 	     const std::string& pattern)
   {
     while (lines.empty() == false) {
       std::string line = lines.front();
-      lines.pop();
+      lines.pop_front();
       if (matchLine(line, pattern) == true) {
 	matchLines.push_back(line);
       } // if
     } // while
   } // matchLines
 
+
+  void
+  matchLinesRegex(std::vector<std::string>& matchLines,
+	     std::deque<std::string>& lines,
+	     std::string pattern)
+  {
+    std::replace(pattern.begin(), pattern.end(), '*', '.');
+    std::string regexpStr("(.*)(");
+    regexpStr += pattern;
+    regexpStr += ")(.*)";
+    std::regex regexp(regexpStr, std::regex_constants::icase);
+    std::copy_if(lines.begin(), lines.end(),std::back_inserter(matchLines),
+		 [&regexp](const std::string& line) {
+		   return std::regex_match(line, regexp);
+		 });
+
+  } // matchLinesRegex
 
   void
   printUsage()
@@ -115,10 +133,10 @@ int main(int argc, char* argv[])
   const size_t numLines      = std::atoi(argv[SizeIdx]);
   const std::string pattern  = argv[PatternIdx];
 
-  std::queue<std::string> lines;
+  std::deque<std::string> lines;
   readFile(lines, fileName, numLines);
   std::vector<std::string> mLines;
-  matchLines(mLines, lines, pattern);
+  matchLinesRegex(mLines, lines, pattern);
 
   for (int i=0; i < mLines.size(); ++i) {
     std::cout << mLines[i] << std::endl;
